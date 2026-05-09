@@ -56,3 +56,13 @@ def patch_country(country_id: int, country_update: CountryUpate, session: Sessio
     session.commit()
     session.refresh(country)
     return country
+
+@router.delete("/{country_id}", status_code=204)
+def delete_country(country_id: int, session: Session = Depends(get_session)):
+    country = session.get(Country, country_id)
+    if not country:
+        raise HTTPException(status_code=404, detail="Country not found")
+    
+    session.delete(country)
+    session.commit()
+    return
