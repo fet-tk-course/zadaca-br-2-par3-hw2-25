@@ -19,3 +19,10 @@ def get_country(country_id: int, session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
     return country
 
+@router.post("/")
+def create_country(country: CountryCreate, session: Session = Depends(get_session)):
+    new_country = Country.from_orm(country)
+    session.add(new_country)
+    session.commit()
+    session.refresh(new_country)
+    return new_country
