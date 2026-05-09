@@ -33,7 +33,7 @@ def update_country(country_id: int, country_update: CountryUpate, session: Sessi
     if not country:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
     
-    country_data = country_update.dict(exclude_unset=True)
+    country_data = country_update.dict()
     for key, value in country_data.items():
         setattr(country, key, value)
     
