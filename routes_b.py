@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
+from typing import Optional
 
 from database import get_session
 
@@ -8,8 +9,15 @@ from models_b import Country, CountryCreate, CountryUpate
 router = APIRouter(prefix="/country", tags=["Country"])
 
 @router.get("/")
-def get_countries(session: Session = Depends(get_session)):
-    countries = session.exec(select(Country)).all()
+def get_countries(name : Optional[str] = None, group : Optional[str] = None, continent : Optional[str] = None, session: Session = Depends(get_session)):
+    query = select(Country)
+    if name:
+        query = query.where(Country.name == name)
+    if group:
+        query = query.where(Country.group == group)
+    if continent:
+        query = query.where(Country.continent == continent)
+    countries = session.exec(query).all()
     return countries
 
 @router.get("/{country_id}")
