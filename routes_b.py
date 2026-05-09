@@ -6,7 +6,7 @@ from database import get_session
 
 from models_b import Country, CountryCreate, CountryUpate
 
-router = APIRouter(prefix="/country", tags=["Country"])
+router = APIRouter(prefix="/countries", tags=["Country"])
 
 @router.get("/")
 def get_countries(name : Optional[str] = None, group : Optional[str] = None, continent : Optional[str] = None, session: Session = Depends(get_session)):
