@@ -12,7 +12,7 @@ router = APIRouter(prefix="/countries", tags=["Country"])
 def get_countries(name : Optional[str] = None, group : Optional[str] = None, continent : Optional[str] = None, session: Session = Depends(get_session)):
     query = select(Country)
     if name:
-        query = query.where(Country.name == name)
+        query = query.where(Country.name.like(f"%{name}%"))
     if group:
         query = query.where(Country.group == group)
     if continent:
