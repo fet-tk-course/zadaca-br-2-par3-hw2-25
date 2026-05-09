@@ -6,7 +6,7 @@ from typing import Optional
 
 class Country(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str
+    name: str = Field(index=True, unique=True)
     group: str  
     fifa_ranking: int
     continent: str
@@ -19,7 +19,7 @@ class CountryCreate(SQLModel):
     continent: str
     world_cup_wins: int
 
-class CountryUpate(SQLModel):
+class CountryUpdate(SQLModel):
     name: Optional[str] = None
     group: Optional[str] = None  
     fifa_ranking: Optional[int] = None
