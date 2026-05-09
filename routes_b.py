@@ -4,7 +4,7 @@ from typing import Optional
 
 from database import get_session
 
-from models_b import Country, CountryCreate, CountryUpate
+from models_b import Country, CountryCreate, CountryUpdate
 
 router = APIRouter(prefix="/countries", tags=["Country"])
 
@@ -36,7 +36,7 @@ def create_country(country: CountryCreate, session: Session = Depends(get_sessio
     return new_country
 
 @router.put("/{country_id}")
-def update_country(country_id: int, country_update: CountryUpate, session: Session = Depends(get_session)):
+def update_country(country_id: int, country_update: CountryUpdate, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
@@ -51,7 +51,7 @@ def update_country(country_id: int, country_update: CountryUpate, session: Sessi
     return country
 
 @router.patch("/{country_id}")
-def patch_country(country_id: int, country_update: CountryUpate, session: Session = Depends(get_session)):
+def patch_country(country_id: int, country_update: CountryUpdate, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
