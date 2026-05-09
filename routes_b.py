@@ -24,7 +24,7 @@ def get_countries(name : Optional[str] = None, group : Optional[str] = None, con
 def get_country(country_id: int, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
     return country
 
 @router.post("/")
@@ -36,10 +36,10 @@ def create_country(country: CountryCreate, session: Session = Depends(get_sessio
     return new_country
 
 @router.put("/{country_id}")
-def update_country(country_id: int, country_update: CountryUpdate, session: Session = Depends(get_session)):
+def update_country(country_id: int, country_update: CountryCreate, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
     
     country_data = country_update.dict()
     for key, value in country_data.items():
@@ -54,7 +54,7 @@ def update_country(country_id: int, country_update: CountryUpdate, session: Sess
 def patch_country(country_id: int, country_update: CountryUpdate, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Country not found")
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
     
     country_data = country_update.dict(exclude_unset=True)
     for key, value in country_data.items():
@@ -69,7 +69,7 @@ def patch_country(country_id: int, country_update: CountryUpdate, session: Sessi
 def delete_country(country_id: int, session: Session = Depends(get_session)):
     country = session.get(Country, country_id)
     if not country:
-        raise HTTPException(status_code=404, detail="Country not found")
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
     
     session.delete(country)
     session.commit()
