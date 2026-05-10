@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from database import create_db_and_tables
 from routes_a import router as matches_router
 
-# NAPOMENA ZA KOLEGU: Dodati import ispod i registrirati router
-# from routes_b import router as countries_router
+
+from routes_b import router as country_router
 
 
 """Kreira tabelu i baze podataka prilikom pokretanja aplikacije"""
@@ -23,12 +23,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
- 
 app.include_router(matches_router)
-
-# NAPOMENA ZA KOLEGU: Uncommentati nakon merge-a
-# app.include_router(countries_router)
-
+app.include_router(country_router)
 
 """Endpoint RUTE"""
 @app.get("/")
