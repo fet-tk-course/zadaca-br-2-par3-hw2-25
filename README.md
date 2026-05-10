@@ -93,7 +93,39 @@ curl -X PATCH "http://localhost:8000/matches/70" \
 
 ### Resurs B: `/countries`
 
-[Kolega popunjava svoj dio]
+| Metoda | Ruta | Opis |
+|--------|------|------|
+| GET | `/countries` | Lista svih država (filteri : `name`, `group`, `continent` |
+| GET | `/countries/{id}` | Dohvatanje države po ID-u |
+| POST | `/countries` | Kreiranje nove države |
+| PUT | `countries/{id}` | Izmjena podataka države |
+| PATCH | `countries/{id}` | Parcijalna izmjena podataka države |
+| DELETE | `/matches/{id}` | Brisanje države |
+
+**Primjeri zahtjeva:**
+```bash
+# Dohvatanje svih država
+curl -X GET "http://localhost:8000/countries"
+
+# Dohvatanje svih država iz grupe A koje su iz Evrope
+curl -X GET "http://localhost:8000/countries?group=A&continent=UEFA"
+
+# Kreiranje nove države
+curl -X POST "http://localhost:8000/countries" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Bosnia and Herzegovina",
+    "continent": "UEFA",
+    "group": "A"
+  }'
+
+# Izmjena podataka države
+curl -X PATCH "http://localhost:8000/countries/1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "group": "B"
+  }'
+```
 
 ## Korištenje AI alata
 
@@ -112,9 +144,18 @@ curl -X PATCH "http://localhost:8000/matches/70" \
 - **Prilagodbe:** Prilagođene su poruke grešaka na bosanski jezik i dodan je filter po gradu (`city`) koji nije bio u originalnom prijedlogu.
 
 ### Student B - Države (`/countries`)
+**Alat:** Gemini
+**Model:** Gemini 3 Flash
 
-[Kolega popunjava svoj dio]
+**Primjer 1:**
+- **Prompt:** "Napravi mi bash primjere za sve endpoint-e za ovu CRUD aplikaciju uz objašnjenja."
+- **Kako je pomoglo:** Dobio sam primjere kako napraviti bash skriptu za slanje request-ova za API.
+- **Prilagodbe:** Odbacio sam višak podataka koji su primjere napravili prevelikim.
 
+**Primjer 2:**
+- **Prompt:** "Napravi SQLModel za državu sa kolonama koje bi imala država na svjetskom prvenstvu."
+- **Kako je pomoglo:** Dobio sam SQLmodel Country koji je sadržavao osnovne informacije države.
+- **Prilagodbe:** Dodao sam polje fifa_ranking koje nije bilo generisano od strane AI.
 ## Napomene
 
 - Pokretanjem `POST /matches/seed` puni se baza sa svih 72 grupnih utakmica SP 2026 sa tačnim datumima, vremenima i gradovima.
