@@ -3,12 +3,12 @@
 
 ## O projektu
 
-[Ovdje ukratko opišite domenu vaše aplikacije i njenu svrhu]
+Aplikacija pokriva domenu Svjetskog fudbalskog prvenstva 2026. API omogućava upravljanje podacima o utakmicama i državama sudionicama turnira. Implementirana je kao REST API koristeći FastAPI framework sa SQLite bazom podataka.
 
 ## Tim
 
-- **Student A**: [Ime Prezime] - resurs: `/resursi_a`
-- **Student B**: [Ime Prezime] - resurs: `/resursi_b`
+- **Student A**: [Elvir Mustafić] - resurs: `/matches`
+- **Student B**: [Faris Ćosić] - resurs: `/countries`
 
 ## Instalacija i pokretanje
 
@@ -48,44 +48,75 @@ uvicorn main:app --reload
 
 ## API Endpointi
 
-### Resurs A: `/resursi_a`
+### Resurs A: `/matches` (Utakmice)
 
 | Metoda | Ruta | Opis |
 |--------|------|------|
-| GET | `/resursi_a` | Lista svih resursa (sa query filterom) |
-| GET | `/resursi_a/{id}` | Dohvatanje resursa po ID-u |
-| POST | `/resursi_a` | Kreiranje novog resursa |
-| PUT | `/resursi_a/{id}` | Potpuna zamjena resursa |
-| PATCH | `/resursi_a/{id}` | Djelimično ažuriranje resursa |
-| DELETE | `/resursi_a/{id}` | Brisanje resursa |
+| GET | `/matches` | Lista svih utakmica (filteri: `group`, `city`, `is_finished`, `stage`) |
+| GET | `/matches/{id}` | Dohvatanje utakmice po ID-u |
+| POST | `/matches` | Kreiranje nove utakmice (status 201) |
+| PUT | `/matches/{id}` | Potpuna zamjena utakmice |
+| PATCH | `/matches/{id}` | Djelimično ažuriranje utakmice |
+| DELETE | `/matches/{id}` | Brisanje utakmice (status 204) |
+| POST | `/matches/seed` | Punjenje baze sa 72 grupne utakmice SP 2026 |
 
-**Primjer zahtjeva:**
+**Primjeri zahtjeva:**
 ```bash
-# Kreiranje novog resursa
-curl -X POST "http://localhost:8000/resursi_a" \
+# Dohvatanje svih utakmica iz grupe L (Hrvatska, Engleska, Gana, Panama)
+curl -X GET "http://localhost:8000/matches?group=L"
+
+# Dohvatanje svih nezavršenih utakmica
+curl -X GET "http://localhost:8000/matches?is_finished=false"
+
+# Kreiranje nove utakmice
+curl -X POST "http://localhost:8000/matches" \
   -H "Content-Type: application/json" \
-  -d '{"polje1": "vrijednost", "polje2": 123}'
+  -d '{
+    "group": "L",
+    "home_team": "Croatia",
+    "away_team": "England",
+    "match_date": "2026-06-17",
+    "match_time": "22:00",
+    "city": "Dallas",
+    "stage": "Group Stage"
+  }'
+
+# Ažuriranje rezultata utakmice
+curl -X PATCH "http://localhost:8000/matches/70" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "home_score": 1,
+    "away_score": 0,
+    "is_finished": true
+  }'
 ```
 
-### Resurs B: `/resursi_b`
+### Resurs B: `/countries`
 
-[Analogno kao za Resurs A]
+[Kolega popunjava svoj dio]
 
 ## Korištenje AI alata
 
-### Alat: [GitHub Copilot / ChatGPT / ...]
-**Model:** [GPT-4, Copilot model, ...]
+### Student A - Utakmice (`/matches`)
+**Alat:** Claude (Anthropic)  
+**Model:** Claude Sonnet 4.6
 
 **Primjer 1:**
-- **Prompt:** [Npr. "Kreiraj SQLModel klasu za entitet Knjiga sa poljima naslov, autor, godina, isbn"]
-- **Kako je pomoglo:** [Opis]
-- **Prilagodbe:** [Da li ste morali prilagoditi generisani kod]
+- **Prompt:** "Generiši SQLModel entitet za utakmicu na Svjetskom fudbalskom prvenstvu sa najmanje 5 polja različitih tipova, uključujući Optional polja, float i bool."
+- **Kako je pomoglo:** AI je generisao osnovnu strukturu Match klase sa svim potrebnim poljima i tipovima podataka.
+- **Prilagodbe:** Dodana su polja `match_time` i `city` specifična za SP 2026, te prilagođeni komentari na bosanskom jeziku.
 
 **Primjer 2:**
-- **Prompt:** [Npr. "Implementiraj PATCH endpoint sa exclude_unset=True"]
-- **Kako je pomoglo:** [Opis]
-- **Prilagodbe:** [Opis]
+- **Prompt:** "Napiši FastAPI CRUD rute za Match entitet koristeći Depends za session, sa 404 greškama i exclude_unset=True za PATCH endpoint, uključujući seed endpoint sa stvarnim podacima utakmica SP 2026."
+- **Kako je pomoglo:** AI je generisao kompletan CRUD sa svim endpointima i seed podacima za svih 72 grupne utakmice.
+- **Prilagodbe:** Prilagođene su poruke grešaka na bosanski jezik i dodan je filter po gradu (`city`) koji nije bio u originalnom prijedlogu.
+
+### Student B - Države (`/countries`)
+
+[Kolega popunjava svoj dio]
 
 ## Napomene
 
-[Dodatne napomene specifične za vašu implementaciju]
+- Pokretanjem `POST /matches/seed` puni se baza sa svih 72 grupnih utakmica SP 2026 sa tačnim datumima, vremenima i gradovima.
+- Svi komentari u kodu su na bosanskom jeziku, nazivi funkcija i varijabli na engleskom.
+- Aplikacija je testirana putem Swagger dokumentacije na `http://localhost:8000/docs`.
