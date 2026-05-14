@@ -1,27 +1,88 @@
-from sqlmodel import SQLModel, Field
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlmodel import Session, select, func
 from typing import Optional
 
-# TODO: Student B - Definiši svoj SQLModel entitet ovdje
-# 
+from database import get_session
 
-class Country(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True, unique=True)
-    group: str  
-    fifa_ranking: int
-    continent: str
-    world_cup_wins: int
+from models_b import Country, CountryCreate, CountryUpdate
+
+router = APIRouter(prefix="/countries", tags=["Country"])
+
+@router.get("/")
+def get_countries(name : Optional[str] = None, group : Optional[str] = None, continent : Optional[str] = None, session: Session = Depends(get_session)):
+    query = select(Country)
+    if name:
+        query = query.where(Country.name.like(f"%{name}%"))
+    if group:
+        query = query.where(Country.group == group)
+    if continent:
+        query = query.where(Country.continent == continent)
+    countries = session.exec(query).all()
+    return 
+
+@router.get("/average")
+def get_average(group: Optional[str] = None, session: Session = Depends(get_session)):
+    query = select(func.avg(Country.fifa_ranking))
+    if group:
+        query = query.where(Country.group == group)
+    average = session.exec(query)
+    return average
+
+
+@router.get("/{country_id}")
+def get_country(country_id: int, session: Session = Depends(get_session)):
+    country = session.get(Country, country_id)
+    if not country:
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
+    return country
+
+@router.post("/")
+def create_country(country: CountryCreate, session: Session = Depends(get_session)):
+    existCountry = session.get(Country, country.name)
+    if existCountry:
+        raise HTTPException(status_code = 409, detail="Drzava sa tim imenom vec postoji")
+    new_country = Country.from_orm(country)
+    session.add(new_country)
+    session.commit()
+    session.refresh(new_country)
+    return new_country
+
+@router.put("/{country_id}")
+def update_country(country_id: int, country_update: CountryCreate, session: Session = Depends(get_session)):
+    country = session.get(Country, country_id)
+    if not country:
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
     
-class CountryCreate(SQLModel):
-    name: str
-    group: str  
-    fifa_ranking: int
-    continent: str
-    world_cup_wins: int
+    country_data = country_update.dict()
+    for key, value in country_data.items():
+        setattr(country, key, value)
+    
+    session.add(country)
+    session.commit()
+    session.refresh(country)
+    return country
 
-class CountryUpdate(SQLModel):
-    name: Optional[str] = None
-    group: Optional[str] = None  
-    fifa_ranking: Optional[int] = None
-    continent: Optional[str] = None
-    world_cup_wins: Optional[int] = None
+@router.patch("/{country_id}")
+def patch_country(country_id: int, country_update: CountryUpdate, session: Session = Depends(get_session)):
+    country = session.get(Country, country_id)
+    if not country:
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
+    
+    country_data = country_update.dict(exclude_unset=True)
+    for key, value in country_data.items():
+        setattr(country, key, value)
+    
+    session.add(country)
+    session.commit()
+    session.refresh(country)
+    return country
+
+@router.delete("/{country_id}", status_code=204)
+def delete_country(country_id: int, session: Session = Depends(get_session)):
+    country = session.get(Country, country_id)
+    if not country:
+        raise HTTPException(status_code=404, detail="Država nije pronađena")
+    
+    session.delete(country)
+    session.commit()
+    return
