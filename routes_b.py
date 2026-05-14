@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from typing import Optional
 
 from database import get_session
@@ -18,7 +18,16 @@ def get_countries(name : Optional[str] = None, group : Optional[str] = None, con
     if continent:
         query = query.where(Country.continent == continent)
     countries = session.exec(query).all()
-    return countries
+    return 
+
+@router.get("/average")
+def get_average(group: Optional[str] = None, session: Session = Depends(get_session)):
+    query = select(func.avg(Country.fifa_ranking))
+    if group:
+        query = query.where(Country.group == group)
+    average = session.exec(query)
+    return average
+
 
 @router.get("/{country_id}")
 def get_country(country_id: int, session: Session = Depends(get_session)):
@@ -29,6 +38,9 @@ def get_country(country_id: int, session: Session = Depends(get_session)):
 
 @router.post("/")
 def create_country(country: CountryCreate, session: Session = Depends(get_session)):
+    existCountry = session.get(Country, country.name)
+    if existCountry:
+        raise HTTPException(status_code = 409, detail="Drzava sa tim imenom vec postoji")
     new_country = Country.from_orm(country)
     session.add(new_country)
     session.commit()
