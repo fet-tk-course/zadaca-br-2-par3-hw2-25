@@ -120,3 +120,14 @@ curl -X PATCH "http://localhost:8000/matches/70" \
 - Pokretanjem `POST /matches/seed` puni se baza sa svih 72 grupnih utakmica SP 2026 sa tačnim datumima, vremenima i gradovima.
 - Svi komentari u kodu su na bosanskom jeziku, nazivi funkcija i varijabli na engleskom.
 - Aplikacija je testirana putem Swagger dokumentacije na `http://localhost:8000/docs`.
+
+
+## Odbrana zadaća 2
+- Dodani validatori za sva polja u Create modelu. Dodane provjera da li je fifa ranking veci od 1, da li je ime ili kontinent prazan, da li je validna grupa, da li je broj osvojenih svjetskih prvenstava veći ili jednak 0
+- Dodana provjera da li drzava sa istim imenom vec postoji u bazi i ako postoji izbacivanje 509
+- Dodana ruta za dobijanje prosjecnog fifa ranking-a za sve drzave u bazi ili specifično za jednu grupu
+
+- Zahtjevi: GET : /countries/average?group=A
+- Odgovor: Prosjecna vrijednost za grupu A
+
+U svim Endpoint-ima mogu nastati greške da drzava nije pronadjena (404) i u novom endpoint-u da je drzava vec pronadjena i ne moze se kreirati u bazi (409)
