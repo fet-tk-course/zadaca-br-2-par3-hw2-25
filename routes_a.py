@@ -144,6 +144,19 @@ def get_matches(
     matches = session.exec(query).all()
     return matches
 
+"""Ovo je kod za odbranu zadace dva radi lakseg snalazenja pri pregledu zadatak dva"""
+
+@router.post("Izvlacenje_podataka_iz_baze", tags=["Seed"], status_code=status.HTTP_201_CREATED)
+def pretraga_grupa(group: Optional[str] = Query(default=None, description="Filtriranje_po_grupi"), session: Session = Depends(get_session)):
+  
+    if group is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Polje grupa je obavezan.")
+    utakmice = session.exec(select(Match).where(Match.group == group)).all()
+    if not utakmice:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Nema_utakmica_u_ovoj_grupi {group}.")
+    return utakmice
+
+
 
 """GET /matches/{id} – Dohvatanje jedne utakmice po ID-u"""
 @router.get("/{match_id}", response_model=Match)
@@ -162,11 +175,22 @@ def get_match(match_id: int, session: Session = Depends(get_session)):
 @router.post("/", response_model=Match, status_code=status.HTTP_201_CREATED)
 def create_match(match_data: MatchCreate, session: Session = Depends(get_session)):
     """Kreira novu utakmicu i sprema je u bazu. Vraća 201 status."""
+
+
+    """Ovo je kod za odbranu zadace dva radi lakseg snalazenja pri pregledu zadatak 1b"""
+
+    existing = session.exec(select(math).where(match.home_team == match_data.home_team. and match.away_team == match_data.away_team, and match.match_date == match_data.match_date)).first()
+    if existing:
+        raise HTTPException(status_code=status.HTTP 422 Unprocessable Entity, detail="Na ovaj datum vec postoji ova utakmica.")
+    
+    
+    
     match = Match.model_validate(match_data)
     session.add(match)
     session.commit()
     session.refresh(match)
     return match
+
 
 
 """PUT /matches/{id} – Potpuno ažuriranje utakmice"""

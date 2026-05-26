@@ -1,6 +1,7 @@
 from typing import Optional
 from sqlmodel import SQLModel, Field
 
+from pydantic import field_validator
 
 """Glavni entiteti za utakmicu na Svjetskom fudbalskom prvenstvu 2026."""
 class Match(SQLModel, table=True):
@@ -53,6 +54,23 @@ class MatchCreate(SQLModel):
     is_finished: bool = False
     stage: str = "Group Stage"
 
+    """Ovo je kod za odbranu zadace dva radi lakseg snalazenja pri pregledu zadatak 1a"""
+
+@field_validator(naziv_tima)
+@classmethod
+def ime_tima_mora_pocinjati_velikim(cls, v):
+        if not v[0].isupper():
+            raise ValueError("Ime tima mora poceti velikim slovom")
+        return 
+
+@field_validator('city')
+@classmethod
+def city_ne_smije_biti_prazan(cls, v):
+    if not v.strip():
+        raise ValueError("Naziv grada ne smije biti prazan")
+    return v.strip()
+
+
 """Šema za djelimičnu izmjenu utakmice"""
 class MatchUpdate(SQLModel):
     """Shema koja se koristi pri PATCH zahtjevu – sva polja su opcionalna."""
@@ -66,3 +84,5 @@ class MatchUpdate(SQLModel):
     away_score: Optional[int] = None
     is_finished: Optional[bool] = None
     stage: Optional[str] = None
+
+    

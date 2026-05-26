@@ -53,12 +53,29 @@ uvicorn main:app --reload
 | Metoda | Ruta | Opis |
 |--------|------|------|
 | GET | `/matches` | Lista svih utakmica (filteri: `group`, `city`, `is_finished`, `stage`) |
+Ovdje bi trebao biti po arihtekturi novi resurs post Izvlacenje_podataka_iz_baze
 | GET | `/matches/{id}` | Dohvatanje utakmice po ID-u |
 | POST | `/matches` | Kreiranje nove utakmice (status 201) |
 | PUT | `/matches/{id}` | Potpuna zamjena utakmice |
 | PATCH | `/matches/{id}` | Djelimično ažuriranje utakmice |
 | DELETE | `/matches/{id}` | Brisanje utakmice (status 204) |
 | POST | `/matches/seed` | Punjenje baze sa 72 grupne utakmice SP 2026 |
+
+Ovdje je README ZA ODBRANU Elvir MUstafic
+
+Zadatak 1a 
+Kreirani su field validatori ispod klase MatchCreate
+Validator 1 - Provjerava da li ime tima pocinje velikim slovom
+Validator 2 - Provjerava da li je polje grad u kojem igraju timovi prazno polje i ako jeste izbacuje nam poruku da naziv grada ne smije biti prazan
+
+Zadatak 1b
+U vec postojecem POST endpointu kreirana je provjera da li na odredjeni datum postoji utakmica odredjenih timova
+Ako ta utakmica vec postoji korisniku se vraca HTTP 422 Unprocessable Entity
+
+Zadatak 2
+Napravljen je POST endpoint koji provjerava da li smo ukucali ime neke grupe, potom provjerava da li je ta grupa prazna
+Ukoliko je prazno polje za naziv grupe vraca nam se greska HTTP_400_BAD_REQUEST
+Ukoliko je prazna grupa vraca se greska HTTP_404_NOT_FOUND
 
 **Primjeri zahtjeva:**
 ```bash
@@ -161,3 +178,4 @@ curl -X PATCH "http://localhost:8000/countries/1" \
 - Pokretanjem `POST /matches/seed` puni se baza sa svih 72 grupnih utakmica SP 2026 sa tačnim datumima, vremenima i gradovima.
 - Svi komentari u kodu su na bosanskom jeziku, nazivi funkcija i varijabli na engleskom.
 - Aplikacija je testirana putem Swagger dokumentacije na `http://localhost:8000/docs`.
+
